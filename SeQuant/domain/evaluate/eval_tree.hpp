@@ -402,6 +402,7 @@ DataTensorType EvalTree::_evaluate(
     throw std::domain_error("Operation: " + std::to_string((size_t)opr) +
                             " not supported!");
   }  // sum and product type evaluation
+  result.world().gop.fence();
   return result;
 
 }  // function _evaluate
@@ -469,10 +470,12 @@ DataTensorType EvalTree::_evaluate_and_make(
 
   DataTensorType result;
   if (opr == Operation::SUM) {
-    // sum left and right evaluated tensors using TA syntax
+    // Evaluate terms as intermediates
     result(this_annot) =
         intrnl_node->left()->scalar() *
-            _evaluate_and_make(intrnl_node->left(), eval_tensor)(left_annot) +
+            _evaluate_and_make(intrnl_node->left(), eval_tensor)(left_annot);
+
+     result(this_annot) = result(this_annot) +
             intrnl_node->right()->scalar() *
                 _evaluate_and_make(intrnl_node->right(), eval_tensor)(right_annot);
   } else if (opr == Operation::PRODUCT) {
@@ -485,6 +488,7 @@ DataTensorType EvalTree::_evaluate_and_make(
     throw std::domain_error("Operation: " + std::to_string((size_t)opr) +
         " not supported!");
   }  // sum and product type evaluation
+  result.world().gop.fence();
   return result;
 
 }  // function _evaluate_and_make
