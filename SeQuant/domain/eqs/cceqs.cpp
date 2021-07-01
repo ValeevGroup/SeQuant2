@@ -151,30 +151,42 @@ class ccresidual {
         else
           return std::initializer_list<std::pair<int, int>>{};
       };
-      auto result =
-          screened_vac_av{0}(A(P) * H(antisymm), connect({}), screen,
-                             use_topology, canonical_only, antisymm) +
-          screened_vac_av{1}(A(P) * H(antisymm) * T(N, N, false, antisymm),
-                             connect({{1, 2}}), screen, use_topology,
-                             canonical_only, antisymm) +
-          ex<Constant>(1. / 2) *
-              screened_vac_av{2}(A(P) * H(antisymm) * T(N, N, false, antisymm) *
-                                     T(N, N, false, antisymm),
-                                 connect({{1, 2}, {1, 3}}), screen,
-                                 use_topology, canonical_only) +
-          ex<Constant>(1. / 6) *
-              screened_vac_av{3}(A(P) * H(antisymm) * T(N, N, false, antisymm) *
-                                     T(N, N, false, antisymm) *
-                                     T(N, N, false, antisymm),
-                                 connect({{1, 2}, {1, 3}, {1, 4}}), screen,
-                                 use_topology, canonical_only) +
-          ex<Constant>(1. / 24) *
-              screened_vac_av{4}(A(P) * H(antisymm) * T(N, N, false, antisymm) *
-                                     T(N, N, false, antisymm) *
-                                     T(N, N, false, antisymm) *
-                                     T(N, N, false, antisymm),
-                                 connect({{1, 2}, {1, 3}, {1, 4}, {1, 5}}),
-                                 screen, use_topology, canonical_only);
+      ExprPtr result;
+      if (P != 3) {
+        result =
+            screened_vac_av{0}(A(P) * H(antisymm), connect({}), screen,
+                               use_topology, canonical_only, antisymm) +
+            screened_vac_av{1}(A(P) * H(antisymm) * T(N, N, false, antisymm),
+                               connect({{1, 2}}), screen, use_topology,
+                               canonical_only, antisymm) +
+            ex<Constant>(1. / 2) *
+                screened_vac_av{2}(A(P) * H(antisymm) *
+                                       T(N, N, false, antisymm) *
+                                       T(N, N, false, antisymm),
+                                   connect({{1, 2}, {1, 3}}), screen,
+                                   use_topology, canonical_only) +
+            ex<Constant>(1. / 6) *
+                screened_vac_av{3}(
+                    A(P) * H(antisymm) * T(N, N, false, antisymm) *
+                        T(N, N, false, antisymm) * T(N, N, false, antisymm),
+                    connect({{1, 2}, {1, 3}, {1, 4}}), screen, use_topology,
+                    canonical_only) +
+            ex<Constant>(1. / 24) *
+                screened_vac_av{4}(
+                    A(P) * H(antisymm) * T(N, N, false, antisymm) *
+                        T(N, N, false, antisymm) * T(N, N, false, antisymm) *
+                        T(N, N, false, antisymm),
+                    connect({{1, 2}, {1, 3}, {1, 4}, {1, 5}}), screen,
+                    use_topology, canonical_only);
+      }
+      else {
+        result =
+            screened_vac_av{0}(A(P) * H(antisymm), connect({}), screen,
+                               use_topology, canonical_only, antisymm) +
+            screened_vac_av{1}(A(P) * H(antisymm) * T(2, 2, false, antisymm),
+                               connect({{1, 2}}), screen, use_topology,
+                               canonical_only, antisymm);
+      }
       simplify(result);
 
       return result;
