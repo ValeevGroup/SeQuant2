@@ -211,6 +211,20 @@ int main(int argc, char** argv) {
   std::cout << "Generating equations.." << std::endl;
   auto cc_r = sequant::eqs::cceqvec{3, 3}(true, true, true, true, true);
   std::cout << "Generating equations.. Done." << std::endl;
+  auto contains_t3 = [](const auto& summand_ptr) {
+    return ranges::any_of(
+        summand_ptr->template as<sequant::Product>().factors(),
+        [](const auto& factor_ptr) {
+          return factor_ptr->template is<sequant::Tensor>() &&
+                 factor_ptr->template as<sequant::Tensor>().label() ==
+                 L"t" &&
+                 factor_ptr->template as<sequant::Tensor>().bra_rank() ==
+                 3;
+        });
+  };
+  std::wcout << "R1(T3) = " << to_latex(cc_r[1]->as<sequant::Sum>().filter(contains_t3)) << std::endl;
+  std::wcout << "R2(T3) = " << to_latex(cc_r[2]->as<sequant::Sum>().filter(contains_t3)) << std::endl;
+  std::wcout << "R3 = " << to_latex(cc_r[3]) << std::endl;
 
   std::cout << "Optimizing equations.." << std::endl;
   // canonicalize expressions while optimizing
